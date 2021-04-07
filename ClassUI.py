@@ -1,3 +1,4 @@
+import json
 import tkinter as tk
 
 
@@ -9,7 +10,7 @@ class UIRoot:
 
         self._Portals = []
         self._Stations = []
-        self._LocationName = ''
+        self._LocationName = 'Test'
         self._ClearFlag = False
 
         self._WindowName = title
@@ -30,6 +31,7 @@ class UIRoot:
 
         # конфигурация меню
         self._FileMenu.add_command(label='New', command=self.New_Location)
+        self._FileMenu.add_command(label='Save', command=self.SaveProject)
         self._MainMenu.add_cascade(label='File', menu=self._FileMenu)
 
     def Set_Size_Window(self, x, y):
@@ -56,13 +58,13 @@ class UIRoot:
         LocationHeight.config(font="Arial 14 bold")
         LocationWindow.geometry('540x150')
         LocationWindow.config(bg='#ADDBE2')
-        ButtonOk.config(width=10, height=1)
+        ButtonOk.config(width=10, height=1, command=lambda: self.ClickButtonOk(LocationWindow, LocationEntry.get()))
         LocationWindow.resizable(False, False)
         LocationEntry.config(font="Arial 14 bold")
         LocationEntry.bind('<Button-1>', lambda event: self.ClearFieldEntry(LocationEntry))
 
         # Верстка
-        LocationWidth.place(anchor='w',  x=20, y=70, width=240)
+        LocationWidth.place(anchor='w', x=20, y=70, width=240)
         LocationHeight.place(anchor='e', x=520, y=70, width=240)
         ButtonOk.place(anchor='center', x=475, y=125)
         LocationEntry.place(anchor='center', relx=0.5, y=30, width=500)
@@ -75,3 +77,19 @@ class UIRoot:
         if not self._ClearFlag:
             entry.delete(0, 'end')
             self._ClearFlag = True
+
+    def SaveProject(self):
+        if self._LocationName:
+            SaveData = {self._LocationName: {}}
+            SaveData[self._LocationName]['Portals'] = {}
+            SaveData[self._LocationName]['Stations'] = {}
+            for i, portal in enumerate(self._Portals):
+                SaveData[self._LocationName]['Portals'] = portal
+            with open(self._LocationName + '.json', 'w') as FileSave:
+                json.dump(SaveData, FileSave)
+
+    def ClickButtonOk(self, window, project_name):
+        self._LocationName = project_name
+        self.Set_Title(project_name)
+        window.destroy()
+        window.update()
