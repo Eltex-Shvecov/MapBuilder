@@ -1,18 +1,27 @@
 import json
 import tkinter as tk
+from ClassNetwork import Network
 
 
 class UIRoot:
 
     def __init__(self, title, width, height):
-        self._Root = tk.Tk()
-        self._Canvas = tk.Canvas(self._Root, width=1100, height=762, bg='black')
 
+        # данные проекта
+        self._posX = 0
+        self._posY = 0
+        self._canvasWidth = 1100
+        self._canvasHeight = 762
         self._Portals = []
         self._Stations = []
-        self._LocationName = 'Test'
+        self._LocationName = ''
         self._ClearFlag = False
 
+
+        # данные окна
+        self._Root = tk.Tk()
+        self._Canvas = tk.Canvas(self._Root, width=self._canvasWidth, height=self._canvasHeight, bg='black')
+        self._Network = Network(self._Canvas, self._canvasWidth, self._canvasHeight)
         self._WindowName = title
         self._WidthWindow = width
         self._HeightWindow = height
@@ -33,6 +42,9 @@ class UIRoot:
         self._FileMenu.add_command(label='New', command=self.New_Location)
         self._FileMenu.add_command(label='Save', command=self.SaveProject)
         self._MainMenu.add_cascade(label='File', menu=self._FileMenu)
+
+        #бинды
+        self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
 
     def Set_Size_Window(self, x, y):
         self._Root.geometry(x + 'x' + y)
@@ -58,7 +70,8 @@ class UIRoot:
         LocationHeight.config(font="Arial 14 bold")
         LocationWindow.geometry('540x150')
         LocationWindow.config(bg='#ADDBE2')
-        ButtonOk.config(width=10, height=1, command=lambda: self.ClickButtonOk(LocationWindow, LocationEntry.get()))
+        ButtonOk.config(width=10, height=1, command=lambda: self.ClickButtonOk(LocationWindow, LocationEntry.get(),
+                                                                               LocationWidth.get(), LocationHeight.get()))
         LocationWindow.resizable(False, False)
         LocationEntry.config(font="Arial 14 bold")
         LocationEntry.bind('<Button-1>', lambda event: self.ClearFieldEntry(LocationEntry))
@@ -88,8 +101,11 @@ class UIRoot:
             with open(self._LocationName + '.json', 'w') as FileSave:
                 json.dump(SaveData, FileSave)
 
-    def ClickButtonOk(self, window, project_name):
+    def ClickButtonOk(self, window, project_name, pos_x, pos_y):
         self._LocationName = project_name
+        self._posX = int(pos_x)
+        self._posY = int(pos_y)
         self.Set_Title(project_name)
+        self._Network.draw_network(self._posX, self._posY)
         window.destroy()
         window.update()
