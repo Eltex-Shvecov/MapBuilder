@@ -42,6 +42,8 @@ class UIRoot:
         self._FileMenu.add_command(label='New', command=self.New_Location)
         self._FileMenu.add_command(label='Save', command=self.SaveProject)
         self._MainMenu.add_cascade(label='File', menu=self._FileMenu)
+        # дебаг кнопка
+        self._MainMenu.add_cascade(label='CREATE_DEBUG_MAP', command=self.ClickDEBUG_MAP)
 
         #бинды
         self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
@@ -109,3 +111,8 @@ class UIRoot:
         self._Network.draw_network(self._posX, self._posY)
         window.destroy()
         window.update()
+
+    # Create DEBUG_MAP
+    def ClickDEBUG_MAP(self):
+        self.Set_Title('DEBUG_MAP')
+        self._Network.draw_network(2000, 1000)
