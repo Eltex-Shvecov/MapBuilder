@@ -17,7 +17,6 @@ class UIRoot:
         self._LocationName = ''
         self._ClearFlag = False
 
-
         # данные окна
         self._Root = tk.Tk()
         self._Canvas = tk.Canvas(self._Root, width=self._canvasWidth, height=self._canvasHeight, bg='black')
@@ -42,10 +41,9 @@ class UIRoot:
         self._FileMenu.add_command(label='New', command=self.New_Location)
         self._FileMenu.add_command(label='Save', command=self.SaveProject)
         self._MainMenu.add_cascade(label='File', menu=self._FileMenu)
-        # дебаг кнопка
         self._MainMenu.add_cascade(label='CREATE_DEBUG_MAP', command=self.ClickDEBUG_MAP)
 
-        #бинды
+        # бинды
         self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
 
     def Set_Size_Window(self, x, y):
@@ -59,7 +57,6 @@ class UIRoot:
         self._Root.mainloop()
 
     def New_Location(self):
-        print('New Location')
         self._ClearFlag = False
         LocationWindow = tk.Toplevel(self._Root)
         ButtonOk = tk.Button(LocationWindow, text='Ok')
@@ -114,5 +111,8 @@ class UIRoot:
 
     # Create DEBUG_MAP
     def ClickDEBUG_MAP(self):
+        self._LocationName = 'DEBUG_MAP'
+        self._posX = 2000
+        self._posY = 1000
         self.Set_Title('DEBUG_MAP')
         self._Network.draw_network(2000, 1000)
