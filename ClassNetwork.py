@@ -15,6 +15,7 @@ class Network:
         self._flagCreated = False
 
     def draw_network(self, x, y):
+        self._canvas.delete('all')
         self._flagCreated = True
         self._x = x
         self._y = y
@@ -45,13 +46,11 @@ class Network:
     def resize_network(self, event):
         if self._flagCreated:
             if event.num == 5 or event.delta == -120:
-                self._canvas.delete('all')
                 self._lines.clear()
                 if self._sizeNet >= self._minSize:
                     self._sizeNet -= 0.1
                 self.draw_network(self._x, self._y)
             if event.num == 4 or event.delta == 120:
-                self._canvas.delete('all')
                 self._lines.clear()
                 if self._sizeNet < self._maxSize:
                     self._sizeNet += 0.1

@@ -1,10 +1,9 @@
-import tkinter as tk
-from ClassApp import Application
+from ClassApp import UIApplication
 
 
 def main():
-    MainApplication = Application()
-    MainApplication.startApp()
+    Application = UIApplication()
+    Application.StartApplication()
 
 
 if __name__ == '__main__':
