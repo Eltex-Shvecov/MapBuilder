@@ -32,16 +32,26 @@ class Network:
         self._rect = self._canvas.create_rectangle(x1, y1, x2, y2, outline='blue')
 
         # вертикальные линии
+        r = 1
         i = self._sizeCell * self._sizeNet
         while i + x1 < x2:
-            self._lines.append(self._canvas.create_line(x1 + i, y1, x1 + i, y2, fill='blue'))
+            if r == self._x // self._sizeCell // 2:
+                self._lines.append(self._canvas.create_line(x1 + i, y1, x1 + i, y2, fill='red'))
+            else:
+                self._lines.append(self._canvas.create_line(x1 + i, y1, x1 + i, y2, fill='blue'))
             i += self._sizeCell * self._sizeNet
+            r += 1
 
         # горизонтальные линии
+        r = 1
         i = self._sizeCell * self._sizeNet
         while i + y1 < y2:
-            self._lines.append(self._canvas.create_line(x1, y1 + i, x2, y1 + i, fill='blue'))
+            if r == self._y // self._sizeCell // 2:
+                self._lines.append(self._canvas.create_line(x1, y1 + i, x2, y1 + i, fill='red'))
+            else:
+                self._lines.append(self._canvas.create_line(x1, y1 + i, x2, y1 + i, fill='blue'))
             i += self._sizeCell * self._sizeNet
+            r += 1
 
     def resize_network(self, event):
         if self._flagCreated:
