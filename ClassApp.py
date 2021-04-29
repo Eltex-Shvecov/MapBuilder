@@ -16,6 +16,7 @@ class UIApplication:
         self._Stations = []
         self._LocationName = ''
         self._ClearFlag = False
+        self._DebugMode = False
 
         # атрибуты окна
         self._Root = tk.Tk()
@@ -24,8 +25,10 @@ class UIApplication:
         self._WindowName = title
         self._WidthWindow = width
         self._HeightWindow = height
-        self._MainMenu = tk.Menu(self._Root)
-        self._FileMenu = tk.Menu(self._MainMenu, tearoff=0)
+        self._MainMenu = tk.Menu()
+        self._DebugMenu = tk.Menu()
+        self._ToolsDebugMenu = tk.Menu(tearoff=0)
+        self._FileMenu = tk.Menu(tearoff=0)
         self._bCreatePortal = tk.Button()
         self._bCreateStation = tk.Button()
         self._bCreateInnerPortal = tk.Button()
@@ -42,10 +45,14 @@ class UIApplication:
         self._Root.resizable(False, False)
 
         # конфигурация меню
+        self._ToolsDebugMenu.add_command(label='CREATE DEBUG NETWORK', command=self.ClickDEBUG_MAP)
         self._FileMenu.add_command(label='New', command=self.New_Location)
         self._FileMenu.add_command(label='Save', command=self.SaveProject)
         self._MainMenu.add_cascade(label='File', menu=self._FileMenu)
-        self._MainMenu.add_cascade(label='CREATE_DEBUG_MAP', command=self.ClickDEBUG_MAP)
+        self._DebugMenu.add_cascade(label='File', menu=self._FileMenu)
+        self._DebugMenu.add_cascade(label='Tools', menu=self._ToolsDebugMenu)
+        self._FileMenu.add_separator()
+        self._FileMenu.add_command(label='Debug Mode ON/OFF', command=self.ChangeDebugMode)
 
         # конфигурация кнопок создания объектов
         self._bCreatePortal.config(text='Create Portal', bd=0, bg='#198cff', fg='white', activebackground='#19a0ff',
@@ -146,3 +153,13 @@ class UIApplication:
         self._bCreateStation.place(anchor='ne', x=1356, y=4, width=115, height=40)
         self._bCreateInnerPortal.place(anchor='nw', x=1110, y=54, width=115, height=40)
         self._bCreateCarcasses.place(anchor='ne', x=1356, y=54, width=115, height=40)
+
+    def ChangeDebugMode(self):
+        if self._DebugMode:
+            self._Root.config(menu=self._MainMenu)
+            self._DebugMode = False
+            self.Set_Title(self._LocationName)
+        else:
+            self._Root.config(menu=self._DebugMenu)
+            self._DebugMode = True
+            self.Set_Title('DEBUG MODE ON')
