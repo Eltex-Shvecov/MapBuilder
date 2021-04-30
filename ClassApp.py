@@ -33,6 +33,8 @@ class UIApplication:
         self._bCreateStation = tk.Button()
         self._bCreateInnerPortal = tk.Button()
         self._bCreateCarcasses = tk.Button()
+        self._bCreatePatrolTruck = tk.Button()
+        self._bCreateSpaceShip = tk.Button()
 
     def configuration(self):
         """Конфигурация приложения"""
@@ -65,10 +67,17 @@ class UIApplication:
         self._bCreateCarcasses.config(text='Create \nCarcasses', bd=0, bg='#198cff', fg='white',
                                       activebackground='#19a0ff', font='Arial 12 bold')
 
+        self._bCreatePatrolTruck.config(text='Create \nPatrol Truck', bd=0, bg='#198cff', fg='white',
+                                        activebackground='#19a0ff', font='Arial 12 bold')
+        self._bCreateSpaceShip.config(text='Create \nShip(-s)', bd=0, bg='#198cff', fg='white',
+                                      activebackground='#19a0ff', font='Arial 12 bold')
+
         self._bCreatePortal.place_forget()
         self._bCreateStation.place_forget()
         self._bCreateCarcasses.place_forget()
         self._bCreateInnerPortal.place_forget()
+        self._bCreatePatrolTruck.place_forget()
+        self._bCreateSpaceShip.place_forget()
 
         # бинды
         self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
@@ -153,6 +162,8 @@ class UIApplication:
         self._bCreateStation.place(anchor='ne', x=1356, y=4, width=115, height=40)
         self._bCreateInnerPortal.place(anchor='nw', x=1110, y=54, width=115, height=40)
         self._bCreateCarcasses.place(anchor='ne', x=1356, y=54, width=115, height=40)
+        self._bCreatePatrolTruck.place(anchor='nw', x=1110, y=104, width=115, height=40)
+        self._bCreateSpaceShip.place(anchor='ne', x=1356, y=104, width=115, height=40)
 
     def ChangeDebugMode(self):
         if self._DebugMode:
