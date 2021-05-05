@@ -213,12 +213,12 @@ class UIApplication:
         for portal in self._Portals:
             self._TreeViewRoot.insert('', tk.END, value=[portal.get_name(), portal.get_type()])
 
-        self._TreeViewConfig.insert('', tk.END, value=('Name', ''))
-        self._TreeViewConfig.insert('', tk.END, value=('Type', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Name', portal.get_name()))
+        self._TreeViewConfig.insert('', tk.END, value=('Type', portal.get_type()))
         self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='1.0')
-        self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='1.1')
-        self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='1.2')
-        self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='1.3')
+        self._TreeViewConfig.insert('', tk.END, value=('x', portal._x), iid='1.1')
+        self._TreeViewConfig.insert('', tk.END, value=('y', portal._y), iid='1.2')
+        self._TreeViewConfig.insert('', tk.END, value=('z', portal._y), iid='1.3')
         self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='2.0')
         self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='2.1')
         self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='2.2')
