@@ -15,6 +15,7 @@ class UIApplication:
         self._canvasWidth = 1100
         self._canvasHeight = 762
         self._Portals = []
+        self._DPortals = {}
         self._Stations = []
         self._LocationName = ''
         self._ClearFlag = False
@@ -93,15 +94,32 @@ class UIApplication:
         self._TreeViewConfig.heading('#1', text='Attribute')
         self._TreeViewConfig.heading('#2', text='Value')
         self._TreeViewRoot.place(anchor='nw', x=1110, y=154, width=246)
-        self._TreeViewConfig.place(anchor='nw', x=1110, y=390, width=246)
+        self._TreeViewConfig.place(anchor='nw', x=1110, y=390, width=246, height=260)
         self._TreeViewRoot.column('#1', width=115)
         self._TreeViewRoot.column('#2', width=115)
         self._TreeViewConfig.column('#0', width=5)
         self._TreeViewConfig.column('#1', width=95)
         self._TreeViewConfig.column('#2', width=100)
+        self._TreeViewConfig.insert('', tk.END, value=('Name', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Type', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='1.0')
+        self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='1.1')
+        self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='1.2')
+        self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='1.3')
+        self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='2.0')
+        self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='2.1')
+        self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='2.2')
+        self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='2.3')
+        self._TreeViewConfig.move('1.1', '1.0', '1')
+        self._TreeViewConfig.move('1.2', '1.0', '1')
+        self._TreeViewConfig.move('1.3', '1.0', '1')
+        self._TreeViewConfig.move('2.1', '2.0', '1')
+        self._TreeViewConfig.move('2.2', '2.0', '1')
+        self._TreeViewConfig.move('2.3', '2.0', '1')
 
         # бинды
         self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
+        self._TreeViewRoot.bind('<<TreeviewSelect>>', lambda event: self.FillTreeViewConfig(event))
 
     def Set_Size_Window(self, x, y):
         self._Root.geometry(x + 'x' + y)
@@ -201,31 +219,43 @@ class UIApplication:
             print('New Portal')
         portal = Portal('portal_' + str(self._DEBUG_PORTAL), 10, 20, 30)
         self._DEBUG_PORTAL += 1
-        self._Portals.append(portal)
+        # self._Portals.append(portal)
+        self._DPortals[portal.get_name()] = portal
+        portal = Portal('portal_' + str(self._DEBUG_PORTAL), 40, 50, 60)
+        self._DEBUG_PORTAL += 1
+        #self._Portals.append(portal)
+        self._DPortals[portal.get_name()] = portal
         self.FillTreeViewRoot()
 
     def FillTreeViewRoot(self):
         for i in self._TreeViewRoot.get_children():
             self._TreeViewRoot.delete(i)
+
+        for object_ in self._DPortals.values():
+            self._TreeViewRoot.insert('', tk.END, value=[object_.get_name(), object_.get_type()])
+
+    def FillTreeViewConfig(self, event):
         for i in self._TreeViewConfig.get_children():
             self._TreeViewConfig.delete(i)
 
-        for portal in self._Portals:
-            self._TreeViewRoot.insert('', tk.END, value=[portal.get_name(), portal.get_type()])
+        for selection in self._TreeViewRoot.selection():
+            item = self._TreeViewRoot.item(selection)
+            namePortal = item['values'][0]
+            TempPortal = self._DPortals[namePortal]
 
-        self._TreeViewConfig.insert('', tk.END, value=('Name', portal.get_name()))
-        self._TreeViewConfig.insert('', tk.END, value=('Type', portal.get_type()))
-        self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='1.0')
-        self._TreeViewConfig.insert('', tk.END, value=('x', portal._x), iid='1.1')
-        self._TreeViewConfig.insert('', tk.END, value=('y', portal._y), iid='1.2')
-        self._TreeViewConfig.insert('', tk.END, value=('z', portal._y), iid='1.3')
-        self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='2.0')
-        self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='2.1')
-        self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='2.2')
-        self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='2.3')
-        self._TreeViewConfig.move('1.1', '1.0', '1')
-        self._TreeViewConfig.move('1.2', '1.0', '1')
-        self._TreeViewConfig.move('1.3', '1.0', '1')
-        self._TreeViewConfig.move('2.1', '2.0', '1')
-        self._TreeViewConfig.move('2.2', '2.0', '1')
-        self._TreeViewConfig.move('2.3', '2.0', '1')
+            self._TreeViewConfig.insert('', tk.END, value=('Name', TempPortal.get_name()))
+            self._TreeViewConfig.insert('', tk.END, value=('Type', TempPortal.get_type()))
+            self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='1.0')
+            self._TreeViewConfig.insert('', tk.END, value=('x', TempPortal._x), iid='1.1')
+            self._TreeViewConfig.insert('', tk.END, value=('y', TempPortal._y), iid='1.2')
+            self._TreeViewConfig.insert('', tk.END, value=('z', TempPortal._z), iid='1.3')
+            self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='2.0')
+            self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='2.1')
+            self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='2.2')
+            self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='2.3')
+            self._TreeViewConfig.move('1.1', '1.0', '1')
+            self._TreeViewConfig.move('1.2', '1.0', '1')
+            self._TreeViewConfig.move('1.3', '1.0', '1')
+            self._TreeViewConfig.move('2.1', '2.0', '1')
+            self._TreeViewConfig.move('2.2', '2.0', '1')
+            self._TreeViewConfig.move('2.3', '2.0', '1')
