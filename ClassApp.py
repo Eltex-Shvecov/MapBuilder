@@ -1,6 +1,8 @@
 import json
 import tkinter as tk
+import tkinter.ttk as ttk
 from ClassNetwork import Network
+from ClassPortal import Portal
 
 
 class UIApplication:
@@ -29,6 +31,7 @@ class UIApplication:
         self._DebugMenu = tk.Menu()
         self._ToolsDebugMenu = tk.Menu(tearoff=0)
         self._FileMenu = tk.Menu(tearoff=0)
+        self._TreeViewRoot = ttk.Treeview(self._Root, show='headings', columns=('#1', '#2'))
         self._bCreatePortal = tk.Button()
         self._bCreateStation = tk.Button()
         self._bCreateInnerPortal = tk.Button()
@@ -71,6 +74,7 @@ class UIApplication:
                                         activebackground='#19a0ff', font='Arial 12 bold')
         self._bCreateSpaceShip.config(text='Create \nShip(-s)', bd=0, bg='#198cff', fg='white',
                                       activebackground='#19a0ff', font='Arial 12 bold')
+        self._bCreatePortal.config(command=self.NewPortal)
 
         self._bCreatePortal.place_forget()
         self._bCreateStation.place_forget()
@@ -78,6 +82,13 @@ class UIApplication:
         self._bCreateInnerPortal.place_forget()
         self._bCreatePatrolTruck.place_forget()
         self._bCreateSpaceShip.place_forget()
+
+        # кофигурация таблиц объектов
+        self._TreeViewRoot.heading('#1', text='Наименование')
+        self._TreeViewRoot.heading('#2', text='Тип')
+        self._TreeViewRoot.place(anchor='nw', x=1110, y=154, width=246)
+        self._TreeViewRoot.column('#1', width=120)
+        self._TreeViewRoot.column('#2', width=120)
 
         # бинды
         self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
@@ -174,3 +185,17 @@ class UIApplication:
             self._Root.config(menu=self._DebugMenu)
             self._DebugMode = True
             self.Set_Title('DEBUG MODE ON')
+
+    def NewPortal(self):
+        if self._DebugMode:
+            print('New Portal')
+        portal = Portal('portal_1', 10, 20, 30)
+        self._Portals.append(portal)
+        self.FillTreeViewRoot()
+
+    def FillTreeViewRoot(self):
+        for i in self._TreeViewRoot.get_children():
+            self._TreeViewRoot.delete(i)
+
+        for portal in self._Portals:
+            self._TreeViewRoot.insert('', tk.END, value=[portal.get_name(), portal.get_type()])
