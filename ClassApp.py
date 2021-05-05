@@ -19,6 +19,7 @@ class UIApplication:
         self._LocationName = ''
         self._ClearFlag = False
         self._DebugMode = False
+        self._DEBUG_PORTAL = 1  # debug
 
         # атрибуты окна
         self._Root = tk.Tk()
@@ -33,6 +34,7 @@ class UIApplication:
         self._FileMenu = tk.Menu(tearoff=0)
         self._TreeViewRoot = ttk.Treeview(self._Root, show='headings', columns=('#1', '#2'))
         self._TreeViewConfig = ttk.Treeview(self._Root, show='tree headings', columns=('#1', '#2'))
+        self._ScrollRoot = ttk.Scrollbar(self._Root, orient=tk.VERTICAL, command=self._TreeViewRoot.yview)
         self._bCreatePortal = tk.Button()
         self._bCreateStation = tk.Button()
         self._bCreateInnerPortal = tk.Button()
@@ -85,6 +87,7 @@ class UIApplication:
         self._bCreateSpaceShip.place_forget()
 
         # кофигурация таблиц объектов
+        self._TreeViewRoot.configure(yscroll=self._ScrollRoot)
         self._TreeViewRoot.heading('#1', text='Name')
         self._TreeViewRoot.heading('#2', text='Type')
         self._TreeViewConfig.heading('#1', text='Attribute')
@@ -94,24 +97,9 @@ class UIApplication:
         self._TreeViewRoot.column('#1', width=115)
         self._TreeViewRoot.column('#2', width=115)
         self._TreeViewConfig.column('#0', width=5)
-        self._TreeViewConfig.column('#1', width=120)
-        self._TreeViewConfig.column('#2', width=120)
-        self._TreeViewConfig.insert('', tk.END, value=('Name', ''))
-        self._TreeViewConfig.insert('', tk.END, value=('Type', ''))
-        self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid=0)
-        self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid=1)
-        self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid=2)
-        self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid=3)
-        self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid=4)
-        self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid=5)
-        self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid=6)
-        self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid=7)
-        self._TreeViewConfig.move('1', '0', '1')
-        self._TreeViewConfig.move('2', '0', '1')
-        self._TreeViewConfig.move('3', '0', '1')
-        self._TreeViewConfig.move('5', '4', '1')
-        self._TreeViewConfig.move('6', '4', '1')
-        self._TreeViewConfig.move('7', '4', '1')
+        self._TreeViewConfig.column('#1', width=95)
+        self._TreeViewConfig.column('#2', width=100)
+
         # бинды
         self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
 
@@ -211,13 +199,33 @@ class UIApplication:
     def NewPortal(self):
         if self._DebugMode:
             print('New Portal')
-        portal = Portal('portal_1', 10, 20, 30)
+        portal = Portal('portal_' + str(self._DEBUG_PORTAL), 10, 20, 30)
+        self._DEBUG_PORTAL += 1
         self._Portals.append(portal)
         self.FillTreeViewRoot()
 
     def FillTreeViewRoot(self):
         for i in self._TreeViewRoot.get_children():
             self._TreeViewRoot.delete(i)
+        for i in self._TreeViewConfig.get_children():
+            self._TreeViewConfig.delete(i)
 
         for portal in self._Portals:
             self._TreeViewRoot.insert('', tk.END, value=[portal.get_name(), portal.get_type()])
+
+        self._TreeViewConfig.insert('', tk.END, value=('Name', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Type', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='1.0')
+        self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='1.1')
+        self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='1.2')
+        self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='1.3')
+        self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='2.0')
+        self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='2.1')
+        self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='2.2')
+        self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='2.3')
+        self._TreeViewConfig.move('1.1', '1.0', '1')
+        self._TreeViewConfig.move('1.2', '1.0', '1')
+        self._TreeViewConfig.move('1.3', '1.0', '1')
+        self._TreeViewConfig.move('2.1', '2.0', '1')
+        self._TreeViewConfig.move('2.2', '2.0', '1')
+        self._TreeViewConfig.move('2.3', '2.0', '1')
