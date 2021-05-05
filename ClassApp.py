@@ -32,6 +32,7 @@ class UIApplication:
         self._ToolsDebugMenu = tk.Menu(tearoff=0)
         self._FileMenu = tk.Menu(tearoff=0)
         self._TreeViewRoot = ttk.Treeview(self._Root, show='headings', columns=('#1', '#2'))
+        self._TreeViewConfig = ttk.Treeview(self._Root, show='', columns=('#1', '#2'))
         self._bCreatePortal = tk.Button()
         self._bCreateStation = tk.Button()
         self._bCreateInnerPortal = tk.Button()
@@ -84,12 +85,24 @@ class UIApplication:
         self._bCreateSpaceShip.place_forget()
 
         # кофигурация таблиц объектов
-        self._TreeViewRoot.heading('#1', text='Наименование')
-        self._TreeViewRoot.heading('#2', text='Тип')
+        self._TreeViewRoot.heading('#1', text='Name')
+        self._TreeViewRoot.heading('#2', text='Type')
         self._TreeViewRoot.place(anchor='nw', x=1110, y=154, width=246)
+        self._TreeViewConfig.place(anchor='nw', x=1110, y=390, width=246)
         self._TreeViewRoot.column('#1', width=120)
         self._TreeViewRoot.column('#2', width=120)
-
+        self._TreeViewConfig.column('#1', width=120)
+        self._TreeViewConfig.column('#2', width=120)
+        self._TreeViewConfig.insert('', tk.END, value=('Name', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Type', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Position', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('x', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('y', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('z', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('x', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('y', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('z', ''))
         # бинды
         self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
 
