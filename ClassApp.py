@@ -78,7 +78,7 @@ class UIApplication:
                                         activebackground='#19a0ff', font='Arial 12 bold')
         self._bCreateSpaceShip.config(text='Create \nShip(-s)', bd=0, bg='#198cff', fg='white',
                                       activebackground='#19a0ff', font='Arial 12 bold')
-        self._bCreatePortal.config(command=self.NewObject)
+        self._bCreatePortal.config(command=lambda: self.NewObject(type='portal'))
 
         self._bCreatePortal.place_forget()
         self._bCreateStation.place_forget()
@@ -205,7 +205,7 @@ class UIApplication:
         self._Network.draw_network(2000, 1000)
         self.Visible_button_true()
         self.Visible_TreeView_true()
-        self.NewObject()
+        self.NewObject(type='portal')
 
     def Visible_button_true(self):
         """Показать кнопки добавления объектов"""
@@ -262,9 +262,9 @@ class UIApplication:
             self._DebugMode = True
             self.Set_Title('DEBUG MODE ON')
 
-    def NewObject(self):
+    def NewObject(self, type):
         """Создание объекта"""
-        obj = Object('portal_' + str(len(self._Objects)))
+        obj = Object(type + '_' + str(len(self._Objects)), type)
         self._Objects[obj.get_name()] = obj
         self.UpdateTreeViewRoot()
 
@@ -285,13 +285,13 @@ class UIApplication:
             self._TreeViewConfig.insert('', tk.END, value=('Name', obj.get_name()))
             self._TreeViewConfig.insert('', tk.END, value=('Type', obj.get_type()))
             self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='1.0')
-            self._TreeViewConfig.insert('', tk.END, value=('x', obj._x), iid='1.1')
-            self._TreeViewConfig.insert('', tk.END, value=('y', obj._y), iid='1.2')
-            self._TreeViewConfig.insert('', tk.END, value=('z', obj._z), iid='1.3')
+            self._TreeViewConfig.insert('', tk.END, value=('x', obj.get_coordinates()[0]), iid='1.1')
+            self._TreeViewConfig.insert('', tk.END, value=('y', obj.get_coordinates()[1]), iid='1.2')
+            self._TreeViewConfig.insert('', tk.END, value=('z', obj.get_coordinates()[2]), iid='1.3')
             self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='2.0')
-            self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='2.1')
-            self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='2.2')
-            self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='2.3')
+            self._TreeViewConfig.insert('', tk.END, value=('x', obj.get_coordinates()[3]), iid='2.1')
+            self._TreeViewConfig.insert('', tk.END, value=('y', obj.get_coordinates()[4]), iid='2.2')
+            self._TreeViewConfig.insert('', tk.END, value=('z', obj.get_coordinates()[5]), iid='2.3')
             self._TreeViewConfig.move('1.1', '1.0', '1')
             self._TreeViewConfig.move('1.2', '1.0', '1')
             self._TreeViewConfig.move('1.3', '1.0', '1')
@@ -311,14 +311,16 @@ class UIApplication:
         itemRoot = self._TreeViewRoot.item(self._TreeViewRoot.selection()[0])
         itemConfig = self._TreeViewConfig.item(self._TreeViewConfig.selection()[0])
         name = itemRoot['values'][0]
-        type = itemRoot['values'][1]
         attr = itemConfig['values'][0]
 
-        if type == 'portal':
+        if attr == 'Name':
             obj = self._Objects[name]
             obj.change_value(attr, entryValue)
             self._Objects[entryValue] = obj
             del self._Objects[name]
+        else:
+            obj = self._Objects[name]
+            obj.change_value(attr, entryValue)
 
         self.UpdateTreeViewRoot()
         self.UpdateTreeViewConfig()
