@@ -41,7 +41,7 @@ class UIApplication:
         self._bCreateCarcasses = tk.Button()
         self._bCreatePatrolTruck = tk.Button()
         self._bCreateSpaceShip = tk.Button()
-        self._ChangeButton = tk.Button(self._Root, text='Change')
+        self._bChangeButton = tk.Button(self._Root, text='Change')
 
     def configuration(self):
         """Конфигурация приложения"""
@@ -79,6 +79,9 @@ class UIApplication:
         self._bCreateSpaceShip.config(text='Create \nShip(-s)', bd=0, bg='#198cff', fg='white',
                                       activebackground='#19a0ff', font='Arial 12 bold')
         self._bCreatePortal.config(command=lambda: self.NewObject(type='portal'))
+        self._bCreateStation.config(command=lambda: self.NewObject(type='station'))
+        self._bCreateInnerPortal.config(command=lambda: self.NewObject(type='iportal'))
+        self._bCreateCarcasses.config(command=lambda: self.NewObject(type='carcasses'))
 
         self._bCreatePortal.place_forget()
         self._bCreateStation.place_forget()
@@ -100,9 +103,9 @@ class UIApplication:
         self._TreeViewConfig.column('#0', width=5)
         self._TreeViewConfig.column('#1', width=95)
         self._TreeViewConfig.column('#2', width=100)
-        self._EntryFieldAttributes.place(anchor='w', x=1110, y=665, height=20)
-        self._ChangeButton.config(command=self.ChangeValueButton)
-        self._ChangeButton.place(anchor='w', x=1260, y=665, height=22)
+        self._EntryFieldAttributes.place_forget()
+        self._bChangeButton.config(command=self.ChangeValueButton)
+        self._bChangeButton.place_forget()
 
         # бинды
         self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
@@ -215,6 +218,8 @@ class UIApplication:
         self._bCreateCarcasses.place(anchor='ne', x=1356, y=54, width=115, height=40)
         self._bCreatePatrolTruck.place(anchor='nw', x=1110, y=104, width=115, height=40)
         self._bCreateSpaceShip.place(anchor='ne', x=1356, y=104, width=115, height=40)
+        self._bChangeButton.place(anchor='w', x=1260, y=665, height=22)
+        self._EntryFieldAttributes.place(anchor='w', x=1110, y=665, height=20)
 
     def Visible_TreeView_true(self):
         """Показать теблицы данных"""
@@ -226,20 +231,20 @@ class UIApplication:
         self.ClearTreeViewConfig()
         self._TreeViewConfig.insert('', tk.END, value=('Name', ''))
         self._TreeViewConfig.insert('', tk.END, value=('Type', ''))
-        self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='1.0')
+        self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='position')
         self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='1.1')
         self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='1.2')
         self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='1.3')
-        self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='2.0')
-        self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='2.1')
-        self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='2.2')
-        self._TreeViewConfig.insert('', tk.END, value=('z', ''), iid='2.3')
-        self._TreeViewConfig.move('1.1', '1.0', '1')
-        self._TreeViewConfig.move('1.2', '1.0', '1')
-        self._TreeViewConfig.move('1.3', '1.0', '1')
-        self._TreeViewConfig.move('2.1', '2.0', '1')
-        self._TreeViewConfig.move('2.2', '2.0', '1')
-        self._TreeViewConfig.move('2.3', '2.0', '1')
+        self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='orientation')
+        self._TreeViewConfig.insert('', tk.END, value=('xx', ''), iid='2.1')
+        self._TreeViewConfig.insert('', tk.END, value=('yy', ''), iid='2.2')
+        self._TreeViewConfig.insert('', tk.END, value=('zz', ''), iid='2.3')
+        self._TreeViewConfig.move('1.1', 'position', '1')
+        self._TreeViewConfig.move('1.2', 'position', '1')
+        self._TreeViewConfig.move('1.3', 'position', '1')
+        self._TreeViewConfig.move('2.1', 'orientation', '1')
+        self._TreeViewConfig.move('2.2', 'orientation', '1')
+        self._TreeViewConfig.move('2.3', 'orientation', '1')
 
     def ClearTreeViewRoot(self):
         """Очистка полей в таблице объектов"""
@@ -284,20 +289,20 @@ class UIApplication:
 
             self._TreeViewConfig.insert('', tk.END, value=('Name', obj.get_name()))
             self._TreeViewConfig.insert('', tk.END, value=('Type', obj.get_type()))
-            self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='1.0')
+            self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='position')
             self._TreeViewConfig.insert('', tk.END, value=('x', obj.get_coordinates()[0]), iid='1.1')
             self._TreeViewConfig.insert('', tk.END, value=('y', obj.get_coordinates()[1]), iid='1.2')
             self._TreeViewConfig.insert('', tk.END, value=('z', obj.get_coordinates()[2]), iid='1.3')
-            self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='2.0')
-            self._TreeViewConfig.insert('', tk.END, value=('x', obj.get_coordinates()[3]), iid='2.1')
-            self._TreeViewConfig.insert('', tk.END, value=('y', obj.get_coordinates()[4]), iid='2.2')
-            self._TreeViewConfig.insert('', tk.END, value=('z', obj.get_coordinates()[5]), iid='2.3')
-            self._TreeViewConfig.move('1.1', '1.0', '1')
-            self._TreeViewConfig.move('1.2', '1.0', '1')
-            self._TreeViewConfig.move('1.3', '1.0', '1')
-            self._TreeViewConfig.move('2.1', '2.0', '1')
-            self._TreeViewConfig.move('2.2', '2.0', '1')
-            self._TreeViewConfig.move('2.3', '2.0', '1')
+            self._TreeViewConfig.insert('', tk.END, value=('Orientation', ''), iid='orientation')
+            self._TreeViewConfig.insert('', tk.END, value=('xx', obj.get_coordinates()[3]), iid='2.1')
+            self._TreeViewConfig.insert('', tk.END, value=('yy', obj.get_coordinates()[4]), iid='2.2')
+            self._TreeViewConfig.insert('', tk.END, value=('zz', obj.get_coordinates()[5]), iid='2.3')
+            self._TreeViewConfig.move('1.1', 'position', '1')
+            self._TreeViewConfig.move('1.2', 'position', '1')
+            self._TreeViewConfig.move('1.3', 'position', '1')
+            self._TreeViewConfig.move('2.1', 'orientation', '1')
+            self._TreeViewConfig.move('2.2', 'orientation', '1')
+            self._TreeViewConfig.move('2.3', 'orientation', '1')
 
     def EnterEntryAttributesField(self, event):
         self._EntryFieldAttributes.delete(0, tk.END)
