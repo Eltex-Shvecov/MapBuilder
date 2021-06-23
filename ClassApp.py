@@ -41,7 +41,9 @@ class UIApplication:
         self._bCreateCarcasses = tk.Button()
         self._bCreatePatrolTruck = tk.Button()
         self._bCreateSpaceShip = tk.Button()
+        self._bGenerateJsonFile = tk.Button()
         self._bChangeButton = tk.Button(self._Root, text='Change')
+
 
     def configuration(self):
         """Конфигурация приложения"""
@@ -78,6 +80,8 @@ class UIApplication:
                                         activebackground='#19a0ff', font='Arial 12 bold')
         self._bCreateSpaceShip.config(text='Create \nShip(-s)', bd=0, bg='#198cff', fg='white',
                                       activebackground='#19a0ff', font='Arial 12 bold')
+        self._bGenerateJsonFile.config(text='Generate Script file', bd=0, bg='#198cff', fg='white',
+                                       activebackground='#19a0ff', font='Arial 16 bold')
         self._bCreatePortal.config(command=lambda: self.NewObject(type='portal'))
         self._bCreateStation.config(command=lambda: self.NewObject(type='station'))
         self._bCreateInnerPortal.config(command=lambda: self.NewObject(type='iportal'))
@@ -89,6 +93,7 @@ class UIApplication:
         self._bCreateInnerPortal.place_forget()
         self._bCreatePatrolTruck.place_forget()
         self._bCreateSpaceShip.place_forget()
+        self._bGenerateJsonFile.place_forget()
 
         # кофигурация таблиц объектов
         self._TreeViewRoot.configure(yscroll=self._ScrollRoot)
@@ -220,6 +225,7 @@ class UIApplication:
         self._bCreateSpaceShip.place(anchor='ne', x=1356, y=104, width=115, height=40)
         self._bChangeButton.place(anchor='w', x=1260, y=665, height=22)
         self._EntryFieldAttributes.place(anchor='w', x=1110, y=665, height=20)
+        self._bGenerateJsonFile.place(anchor='se', x=1356, y=765, width=246, height=40)
 
     def Visible_TreeView_true(self):
         """Показать теблицы данных"""
