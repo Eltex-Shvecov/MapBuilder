@@ -237,6 +237,7 @@ class UIApplication:
         self.ClearTreeViewConfig()
         self._TreeViewConfig.insert('', tk.END, value=('Name', ''))
         self._TreeViewConfig.insert('', tk.END, value=('Type', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Dest loc', ''))
         self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='position')
         self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='1.1')
         self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='1.2')
@@ -295,6 +296,7 @@ class UIApplication:
 
             self._TreeViewConfig.insert('', tk.END, value=('Name', obj.get_name()))
             self._TreeViewConfig.insert('', tk.END, value=('Type', obj.get_type()))
+            self._TreeViewConfig.insert('', tk.END, value=('Dest loc', obj.get_dest_loc()))
             self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='position')
             self._TreeViewConfig.insert('', tk.END, value=('x', obj.get_coordinates()[0]), iid='1.1')
             self._TreeViewConfig.insert('', tk.END, value=('y', obj.get_coordinates()[1]), iid='1.2')
