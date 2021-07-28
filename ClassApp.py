@@ -90,7 +90,7 @@ class UIApplication:
 
         self._bGenerateFiles.config(command=lambda: self.GenerateFiles())
         self._bCreatePortal.config(command=lambda: self.NewObject(type='portal'))
-        self._bCreateStation.config(command=lambda: self.NewObject(type='1'))
+        self._bCreateStation.config(command=lambda: self.NewObject(type='station'))
         self._bCreateInnerPortal.config(command=lambda: self.NewObject(type='iportal'))
         self._bCreateCarcasses.config(command=lambda: self.NewObject(type='carcasses'))
 
@@ -285,7 +285,7 @@ class UIApplication:
         """Создание объекта"""
         if type == 'portal':
             self._exPortal = True
-        if type.isdigit():
+        if type == 'station':
             self._exStation = True
         if type == 'iportal':
             self._exIPortal = True
@@ -357,14 +357,48 @@ class UIApplication:
                 os.mkdir(self._LocationName)
 
             with open(self._LocationName + '/activate.script', 'w') as activate_file:
-                activate_file.writelines(filestr.logo)
-                activate_file.writelines('CountVisitsToSector();\n')
+                activate_file.write(filestr.logo)
+                activate_file.write('CountVisitsToSector();\n')
 
                 if self._exPortal:
-                    activate_file.writelines(filestr.triggers_portals)
+                    activate_file.write(filestr.triggers_portals)
 
                 if self._exStation:
-                    activate_file.writelines(filestr.triggers_station)
+                    activate_file.write(filestr.triggers_station)
 
                 if self._exIPortal:
-                    activate_file.writelines(filestr.triggers_inner)
+                    activate_file.write(filestr.triggers_inner)
+
+            with open(self._LocationName + '/functions.script', 'w') as function_file:
+                function_file.write(filestr.logo)
+                if self._exPortal:
+                    function_file.write('function CreatePortalsInSector()\n')
+                    function_file.write('\tsector_portals = {};\n\n')
+
+                    idx = 1
+                    for portal in self._Objects.values():
+                        if portal.isPortal():
+                            function_file.write('\tPortalTemplate(' + str(idx) + ', "P_' + portal.get_name().upper() + '", "' + portal.get_dest_loc().lower() + '");\n')
+                            idx += 1
+
+                    function_file.write('\n\treturn sector_portals;\n')
+                    function_file.write('end;\n\n')
+
+                if self._exStation:
+                    function_file.write('function CreateStationsInSector()\n')
+                    function_file.write('\tsector_stations = {};\n\n')
+
+                    idx = 1
+                    for station in self._Objects.values():
+                        if station.isStation():
+                            function_file.write('\tStationTemplate(' + str(idx) + ', "STATION_' + station.get_name().upper() + '", ' + station.get_type() + ', "param", TRUE, {nav_point_prefs});\n')
+                            idx += 1
+
+                    function_file.write('\n\treturn sector_stations;\n')
+                    function_file.write('end;\n\n')
+
+                if self._exIPortal:
+                    function_file.write('function CreateInnerPortalsInSector()\n')
+                    function_file.write('\tlocal sector_innerportals = {};\n\n')
+                    function_file.write('\treturn sector_innerportals;\n')
+                    function_file.write('end;\n')

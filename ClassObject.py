@@ -11,6 +11,18 @@ class Object:
         self._yy = yy
         self._zz = zz
 
+    def isPortal(self):
+        if self._type == 'portal':
+            return True
+        else:
+            return False
+
+    def isStation(self):
+        if self._type == 'station':
+            return True
+        else:
+            return False
+
     def get_name(self):
         return self._name
 
