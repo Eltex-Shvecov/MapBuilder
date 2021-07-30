@@ -1,7 +1,8 @@
 class Object:
 
-    def __init__(self, name='', type='portal', x=0, y=0, z=0, xx=0, yy=0, zz=0):
+    def __init__(self, name='', type='portal', x=0, y=0, z=0, xx=0, yy=0, zz=0, dest_loc=''):
         self._name = name
+        self._dest_loc = dest_loc
         self._type = type
         self._x = x
         self._y = y
@@ -10,11 +11,26 @@ class Object:
         self._yy = yy
         self._zz = zz
 
+    def isPortal(self):
+        if self._type == 'portal':
+            return True
+        else:
+            return False
+
+    def isStation(self):
+        if self._type == 'station':
+            return True
+        else:
+            return False
+
     def get_name(self):
         return self._name
 
     def get_type(self):
         return self._type
+
+    def get_dest_loc(self):
+        return self._dest_loc
 
     def get_coordinates(self):
         coordinates = [self._x, self._y, self._z, self._xx, self._yy, self._zz]
@@ -44,6 +60,9 @@ class Object:
     def set_zz(self, value):
         self._zz = value
 
+    def set_dest_loc(self, value):
+        self._dest_loc = value
+
     def change_value(self, attr, value):
         if attr == 'Name':
             self.set_name(value)
@@ -61,3 +80,5 @@ class Object:
             self.set_yy(value)
         if attr == 'zz':
             self.set_zz(value)
+        if attr == 'Dest loc':
+            self.set_dest_loc(value)

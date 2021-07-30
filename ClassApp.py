@@ -1,4 +1,6 @@
 # import json
+import os
+import FilesString as filestr
 import tkinter as tk
 import tkinter.ttk as ttk
 from ClassNetwork import Network
@@ -19,6 +21,9 @@ class UIApplication:
         self._LocationName = ''
         self._ClearFlag = False
         self._DebugMode = False
+        self._exPortal = False
+        self._exStation = False
+        self._exIPortal = False
 
         # атрибуты окна
         self._Root = tk.Tk()
@@ -41,7 +46,7 @@ class UIApplication:
         self._bCreateCarcasses = tk.Button()
         self._bCreatePatrolTruck = tk.Button()
         self._bCreateSpaceShip = tk.Button()
-        self._bGenerateJsonFile = tk.Button()
+        self._bGenerateFiles = tk.Button()
         self._bChangeButton = tk.Button(self._Root, text='Change')
 
 
@@ -80,8 +85,10 @@ class UIApplication:
                                         activebackground='#19a0ff', font='Arial 12 bold')
         self._bCreateSpaceShip.config(text='Create \nShip(-s)', bd=0, bg='#198cff', fg='white',
                                       activebackground='#19a0ff', font='Arial 12 bold')
-        self._bGenerateJsonFile.config(text='Generate Script file', bd=0, bg='#198cff', fg='white',
+        self._bGenerateFiles.config(text='Generate Script file', bd=0, bg='#198cff', fg='white',
                                        activebackground='#19a0ff', font='Arial 16 bold')
+
+        self._bGenerateFiles.config(command=lambda: self.GenerateFiles())
         self._bCreatePortal.config(command=lambda: self.NewObject(type='portal'))
         self._bCreateStation.config(command=lambda: self.NewObject(type='station'))
         self._bCreateInnerPortal.config(command=lambda: self.NewObject(type='iportal'))
@@ -93,7 +100,7 @@ class UIApplication:
         self._bCreateInnerPortal.place_forget()
         self._bCreatePatrolTruck.place_forget()
         self._bCreateSpaceShip.place_forget()
-        self._bGenerateJsonFile.place_forget()
+        self._bGenerateFiles.place_forget()
 
         # кофигурация таблиц объектов
         self._TreeViewRoot.configure(yscroll=self._ScrollRoot)
@@ -225,7 +232,7 @@ class UIApplication:
         self._bCreateSpaceShip.place(anchor='ne', x=1356, y=104, width=115, height=40)
         self._bChangeButton.place(anchor='w', x=1260, y=665, height=22)
         self._EntryFieldAttributes.place(anchor='w', x=1110, y=665, height=20)
-        self._bGenerateJsonFile.place(anchor='se', x=1356, y=765, width=246, height=40)
+        self._bGenerateFiles.place(anchor='se', x=1356, y=765, width=246, height=40)
 
     def Visible_TreeView_true(self):
         """Показать теблицы данных"""
@@ -237,6 +244,7 @@ class UIApplication:
         self.ClearTreeViewConfig()
         self._TreeViewConfig.insert('', tk.END, value=('Name', ''))
         self._TreeViewConfig.insert('', tk.END, value=('Type', ''))
+        self._TreeViewConfig.insert('', tk.END, value=('Dest loc', ''))
         self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='position')
         self._TreeViewConfig.insert('', tk.END, value=('x', ''), iid='1.1')
         self._TreeViewConfig.insert('', tk.END, value=('y', ''), iid='1.2')
@@ -275,6 +283,12 @@ class UIApplication:
 
     def NewObject(self, type):
         """Создание объекта"""
+        if type == 'portal':
+            self._exPortal = True
+        if type == 'station':
+            self._exStation = True
+        if type == 'iportal':
+            self._exIPortal = True
         obj = Object(type + '_' + str(len(self._Objects)), type)
         self._Objects[obj.get_name()] = obj
         self.UpdateTreeViewRoot()
@@ -295,6 +309,7 @@ class UIApplication:
 
             self._TreeViewConfig.insert('', tk.END, value=('Name', obj.get_name()))
             self._TreeViewConfig.insert('', tk.END, value=('Type', obj.get_type()))
+            self._TreeViewConfig.insert('', tk.END, value=('Dest loc', obj.get_dest_loc()))
             self._TreeViewConfig.insert('', tk.END, value=('Position', ''), iid='position')
             self._TreeViewConfig.insert('', tk.END, value=('x', obj.get_coordinates()[0]), iid='1.1')
             self._TreeViewConfig.insert('', tk.END, value=('y', obj.get_coordinates()[1]), iid='1.2')
@@ -335,3 +350,55 @@ class UIApplication:
 
         self.UpdateTreeViewRoot()
         self.UpdateTreeViewConfig()
+
+    def GenerateFiles(self):
+        if self._LocationName is not None:
+            if not os.path.exists(self._LocationName):
+                os.mkdir(self._LocationName)
+
+            with open(self._LocationName + '/activate.script', 'w') as activate_file:
+                activate_file.write(filestr.logo)
+                activate_file.write('CountVisitsToSector();\n')
+
+                if self._exPortal:
+                    activate_file.write(filestr.triggers_portals)
+
+                if self._exStation:
+                    activate_file.write(filestr.triggers_station)
+
+                if self._exIPortal:
+                    activate_file.write(filestr.triggers_inner)
+
+            with open(self._LocationName + '/functions.script', 'w') as function_file:
+                function_file.write(filestr.logo)
+                if self._exPortal:
+                    function_file.write('function CreatePortalsInSector()\n')
+                    function_file.write('\tsector_portals = {};\n\n')
+
+                    idx = 1
+                    for portal in self._Objects.values():
+                        if portal.isPortal():
+                            function_file.write('\tPortalTemplate(' + str(idx) + ', "P_' + portal.get_name().upper() + '", "' + portal.get_dest_loc().lower() + '");\n')
+                            idx += 1
+
+                    function_file.write('\n\treturn sector_portals;\n')
+                    function_file.write('end;\n\n')
+
+                if self._exStation:
+                    function_file.write('function CreateStationsInSector()\n')
+                    function_file.write('\tsector_stations = {};\n\n')
+
+                    idx = 1
+                    for station in self._Objects.values():
+                        if station.isStation():
+                            function_file.write('\tStationTemplate(' + str(idx) + ', "STATION_' + station.get_name().upper() + '", ' + station.get_type() + ', "param", TRUE, {nav_point_prefs});\n')
+                            idx += 1
+
+                    function_file.write('\n\treturn sector_stations;\n')
+                    function_file.write('end;\n\n')
+
+                if self._exIPortal:
+                    function_file.write('function CreateInnerPortalsInSector()\n')
+                    function_file.write('\tlocal sector_innerportals = {};\n\n')
+                    function_file.write('\treturn sector_innerportals;\n')
+                    function_file.write('end;\n')
