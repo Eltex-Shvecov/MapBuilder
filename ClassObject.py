@@ -23,6 +23,12 @@ class Object:
         else:
             return False
 
+    def isIPortal(self):
+        if self._type == 'portal_inner':
+            return True
+        else:
+            return False
+
     def get_name(self):
         return self._name
 

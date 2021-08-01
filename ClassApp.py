@@ -91,7 +91,7 @@ class UIApplication:
         self._bGenerateFiles.config(command=lambda: self.GenerateFiles())
         self._bCreatePortal.config(command=lambda: self.NewObject(type='portal'))
         self._bCreateStation.config(command=lambda: self.NewObject(type='station'))
-        self._bCreateInnerPortal.config(command=lambda: self.NewObject(type='iportal'))
+        self._bCreateInnerPortal.config(command=lambda: self.NewObject(type='portal_inner'))
         self._bCreateCarcasses.config(command=lambda: self.NewObject(type='carcasses'))
 
         self._bCreatePortal.place_forget()
@@ -287,7 +287,7 @@ class UIApplication:
             self._exPortal = True
         if type == 'station':
             self._exStation = True
-        if type == 'iportal':
+        if type == 'portal_inner':
             self._exIPortal = True
         obj = Object(type + '_' + str(len(self._Objects)), type)
         self._Objects[obj.get_name()] = obj
@@ -371,6 +371,7 @@ class UIApplication:
 
             with open(self._LocationName + '/functions.script', 'w') as function_file:
                 function_file.write(filestr.logo)
+                function_file.write('mothership=GetPlayerMotherShip();\n')
                 if self._exPortal:
                     function_file.write('function CreatePortalsInSector()\n')
                     function_file.write('\tsector_portals = {};\n\n')
@@ -402,3 +403,61 @@ class UIApplication:
                     function_file.write('\tlocal sector_innerportals = {};\n\n')
                     function_file.write('\treturn sector_innerportals;\n')
                     function_file.write('end;\n')
+
+            with open(self._LocationName + '/location.script', 'w') as location_file:
+                location_file.write(filestr.logo)
+                location_file.write(filestr.enviroment)
+                location_file.write(filestr.Get_LuaComment('cordinates'))
+
+                # Cordinates
+                # Портал
+                if self._exPortal:
+                    for portal in self._Objects.values():
+                        if portal.isPortal():
+                            location_file.write('XYZ_PORTAL_' + portal.get_name().upper() + ' = Vector3(' + str(portal._x) + ', ' + str(portal._y) + ', ' + str(portal._z) + ');\n')
+                # Станция
+                if self._exStation:
+                    for station in self._Objects.values():
+                        if station.isStation():
+                            location_file.write('XYZ_' + station.get_name().upper() + '_STATION = Vector3(' + str(station._x) + ', ' + str(station._y) + ', ' + str(station._z) + ');\n')
+                # Локальный портал
+                if self._exIPortal:
+                    for iportal in self._Objects.values():
+                        if iportal.isIPortal():
+                            location_file.write('XYZ_IPORTAL_' + iportal.get_name().upper() + ' = Vector3(' + str(iportal._x) + ', ' + str(iportal._y) + ', ' + str(iportal._z) + ');\n')
+
+                # Имя
+                if self._exPortal:
+                    location_file.write(filestr.Get_LuaComment('portals'))
+                    for portal in self._Objects.values():
+                        if portal.isPortal():
+                            location_file.write('PORTAL_' + portal.get_name().upper() + ' = CreateManagedPortal(' + '"' + portal.get_type().lower() + '", "' + portal.get_dest_loc().lower() + '", XYZ_PORTAL_' + portal.get_name().upper() + ', Vector3(' + str(portal._xx) + ', ' + str(portal._yy) + ', ' + str(portal._zz) + '));\n')
+
+                if self._exStation:
+                    location_file.write(filestr.Get_LuaComment('stations'))
+                    for station in self._Objects.values():
+                        if station.isStation():
+                            location_file.write(station.get_name().upper() + '_STATION = CreateStation("CARCASSE_NAME", XYZ_' + station.get_name().upper() + '_STATION, Vector3(' + str(station._xx) + ', ' + str(station._yy) + ', ' + str(station._zz) + '));\n')
+
+                if self._exIPortal:
+                    location_file.write(filestr.Get_LuaComment('inner portal'))
+                    for iportal in self._Objects.values():
+                        if iportal.isIPortal():
+                            location_file.write('PORTAL_INNER_' + iportal.get_name().upper() + ' = CreateManagedPortal("' + iportal.get_type() + '", "", XYZ_IPORTAL_' + iportal.get_name().upper() + ', Vector3(' + str(iportal._xx) + ', ' + str(iportal._yy) + ', ' + str(iportal._zz) + '));\n')
+
+                # LabelS
+                location_file.write(filestr.Get_LuaComment('LabelS'))
+                if self._exPortal:
+                    for portal in self._Objects.values():
+                        if portal.isPortal():
+                            location_file.write('SetObjectLabel(PORTAL_' + portal.get_name().upper() + ', "P_' + portal.get_name().upper() + '");\n')
+
+                if self._exStation:
+                    for station in self._Objects.values():
+                        if station.isStation():
+                            location_file.write('SetObjectLabel(' + station.get_name().upper() + '_STATION, "STATION_' + station.get_name().upper() + '");\n')
+
+                if self._exIPortal:
+                    for iportal in self._Objects.values():
+                        if iportal.isIPortal():
+                            location_file.write('SetObjectLabel(PORTAL_INNER_' + portal.get_name().upper() + ', "IP_' + portal.get_name().upper() + '");\n')
