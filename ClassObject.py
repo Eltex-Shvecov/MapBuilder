@@ -18,7 +18,7 @@ class Object:
             return False
 
     def isStation(self):
-        if self._type == 'station':
+        if self._type.isdigit():
             return True
         else:
             return False
