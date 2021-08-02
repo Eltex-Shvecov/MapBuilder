@@ -90,7 +90,7 @@ class UIApplication:
 
         self._bGenerateFiles.config(command=lambda: self.GenerateFiles())
         self._bCreatePortal.config(command=lambda: self.NewObject(type='portal'))
-        self._bCreateStation.config(command=lambda: self.NewObject(type='station'))
+        self._bCreateStation.config(command=lambda: self.NewObject(type='1'))
         self._bCreateInnerPortal.config(command=lambda: self.NewObject(type='portal_inner'))
         self._bCreateCarcasses.config(command=lambda: self.NewObject(type='carcasses'))
 
@@ -285,11 +285,16 @@ class UIApplication:
         """Создание объекта"""
         if type == 'portal':
             self._exPortal = True
-        if type == 'station':
+        if type.isdigit():
             self._exStation = True
         if type == 'portal_inner':
             self._exIPortal = True
-        obj = Object(type + '_' + str(len(self._Objects)), type)
+
+        if type.isdigit():
+            obj = Object('station' + '_' + str(len(self._Objects)), type)
+        else:
+            obj = Object(type + '_' + str(len(self._Objects)), type)
+
         self._Objects[obj.get_name()] = obj
         self.UpdateTreeViewRoot()
 
