@@ -10,7 +10,8 @@ class Network:
         self._center_y = height // 2
         self._x = 0
         self._y = 0
-        self._minSize = 0.2
+        self._size_object = 50
+        self._minSize = 0.4
         self._maxSize = 1.7
         self._flagCreated = False
 
@@ -53,7 +54,7 @@ class Network:
             i += self._sizeCell * self._sizeNet
             r += 1
 
-    def resize_network(self, event):
+    def resize_network(self, event, objects):
         if self._flagCreated:
             if event.num == 5 or event.delta == -120:
                 self._lines.clear()
@@ -65,3 +66,16 @@ class Network:
                 if self._sizeNet < self._maxSize:
                     self._sizeNet += 0.1
                 self.draw_network(self._x, self._y)
+            self.update_draw_objects(objects)
+
+    def draw_object(self, x, y, color):
+        x *= self._sizeNet
+        y *= self._sizeNet
+        correlation = (self._size_object * self._sizeNet) // 2
+        x = self._center_x + x
+        y = self._center_y - y
+        self._canvas.create_rectangle(x - correlation, y - correlation, x + correlation, y + correlation, fill=color)
+
+    def update_draw_objects(self, object):
+        for obj in object.values():
+            self.draw_object(obj.get_coordinates()[0], obj.get_coordinates()[1], obj.get_color())

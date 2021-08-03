@@ -1,6 +1,6 @@
 class Object:
 
-    def __init__(self, name='', type='portal', x=0, y=0, z=0, xx=0, yy=0, zz=0, dest_loc=''):
+    def __init__(self, name='', type='portal', x=0, y=0, z=0, xx=0, yy=0, zz=0, dest_loc='', color='green'):
         self._name = name
         self._dest_loc = dest_loc
         self._type = type
@@ -10,6 +10,7 @@ class Object:
         self._xx = xx
         self._yy = yy
         self._zz = zz
+        self._color = color
 
     def isPortal(self):
         if self._type == 'portal':
@@ -75,16 +76,19 @@ class Object:
         if attr == 'Type':
             self.set_type(value)
         if attr == 'x':
-            self.set_x(value)
+            self.set_x(int(value))
         if attr == 'y':
-            self.set_y(value)
+            self.set_y(int(value))
         if attr == 'z':
-            self.set_z(value)
+            self.set_z(int(value))
         if attr == 'xx':
-            self.set_xx(value)
+            self.set_xx(int(value))
         if attr == 'yy':
-            self.set_yy(value)
+            self.set_yy(int(value))
         if attr == 'zz':
-            self.set_zz(value)
+            self.set_zz(int(value))
         if attr == 'Dest loc':
             self.set_dest_loc(value)
+
+    def get_color(self):
+        return self._color
