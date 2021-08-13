@@ -78,4 +78,4 @@ class Network:
 
     def update_draw_objects(self, object):
         for obj in object.values():
-            self.draw_object(obj.get_coordinates()[0], obj.get_coordinates()[1], obj.get_color())
+            self.draw_object(obj.get_coordinates()[0], obj.get_coordinates()[2], obj.get_color())
