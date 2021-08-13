@@ -89,10 +89,10 @@ class UIApplication:
                                        activebackground='#19a0ff', font='Arial 16 bold')
 
         self._bGenerateFiles.config(command=lambda: self.GenerateFiles())
-        self._bCreatePortal.config(command=lambda: self.NewObject(type='portal'))
-        self._bCreateStation.config(command=lambda: self.NewObject(type='1'))
-        self._bCreateInnerPortal.config(command=lambda: self.NewObject(type='portal_inner'))
-        self._bCreateCarcasses.config(command=lambda: self.NewObject(type='carcasses'))
+        self._bCreatePortal.config(command=lambda: self.NewObject(type='portal', color='green'))
+        self._bCreateStation.config(command=lambda: self.NewObject(type='1', color='red'))
+        self._bCreateInnerPortal.config(command=lambda: self.NewObject(type='portal_inner', color='yellow'))
+        self._bCreateCarcasses.config(command=lambda: self.NewObject(type='carcasses', color='white'))
 
         self._bCreatePortal.place_forget()
         self._bCreateStation.place_forget()
@@ -120,7 +120,7 @@ class UIApplication:
         self._bChangeButton.place_forget()
 
         # бинды
-        self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event))
+        self._Canvas.bind('<MouseWheel>', lambda event: self._Network.resize_network(event, self._Objects))
         self._TreeViewRoot.bind('<<TreeviewSelect>>', lambda event: self.UpdateTreeViewConfig())
         self._TreeViewConfig.bind('<<TreeviewSelect>>', lambda event: self.EnterEntryAttributesField(event))
 
@@ -215,9 +215,9 @@ class UIApplication:
         self.Visible_TreeView_true()
         self._LocationName = 'DEBUG_MAP'
         self._posX = 2000
-        self._posY = 1000
+        self._posY = 2000
         self.Set_Title('DEBUG_MAP')
-        self._Network.draw_network(2000, 1000)
+        self._Network.draw_network(self._posX, self._posY)
         self.Visible_button_true()
         self.Visible_TreeView_true()
         self.NewObject(type='portal')
@@ -281,7 +281,7 @@ class UIApplication:
             self._DebugMode = True
             self.Set_Title('DEBUG MODE ON')
 
-    def NewObject(self, type):
+    def NewObject(self, type, color='green'):
         """Создание объекта"""
         if type == 'portal':
             self._exPortal = True
@@ -291,9 +291,9 @@ class UIApplication:
             self._exIPortal = True
 
         if type.isdigit():
-            obj = Object('station' + '_' + str(len(self._Objects)), type)
+            obj = Object('station' + '_' + str(len(self._Objects)), type, color=color)
         else:
-            obj = Object(type + '_' + str(len(self._Objects)), type)
+            obj = Object(type + '_' + str(len(self._Objects)), type, color=color)
 
         self._Objects[obj.get_name()] = obj
         self.UpdateTreeViewRoot()
@@ -303,6 +303,8 @@ class UIApplication:
         self.ClearTreeViewRoot()
         for obj in self._Objects.values():
             self._TreeViewRoot.insert('', tk.END, value=[obj.get_name(), obj.get_type()])
+        self._Network.draw_network(self._posX, self._posY)
+        self._Network.update_draw_objects(self._Objects)
 
     def UpdateTreeViewConfig(self):
         """Обновление полей в таблице"""
