@@ -352,6 +352,13 @@ class UIApplication:
             self._Objects[entryValue] = obj
             del self._Objects[name]
         else:
+            if attr == 'x':
+                if int(entryValue) > (self._posX // 2):
+                    entryValue = self._posX // 2
+            if attr == 'z':
+                if int(entryValue) > (self._posY // 2):
+                    entryValue = self._posY // 2
+
             obj = self._Objects[name]
             obj.change_value(attr, entryValue)
 
